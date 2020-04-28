@@ -1,0 +1,131 @@
+Ion_Name,Charge,Multiplier,Mass
+[M+4H],4,0.25,4.02910568
+[M+3H+Na],4,0.25,26.01105068
+[M+2H+2Na],4,0.25,47.99299568
+[M+1H+3Na],4,0.25,69.97494068
+[M+4Na],4,0.25,91.95688568
+[M+3H],3,0.3333333,3.02182926
+[M+2H+Na],3,0.3333333,25.00377426
+[M+H+2Na],3,0.3333333,46.98571926
+[M+3Na],3,0.3333333,68.96766426
+[M+2H],2,0.5,2.01455284
+[M+H+NH4],2,0.5,19.04110184
+[M+H+Na],2,0.5,23.99649784
+[M+H+K],2,0.5,39.97043584
+[M+ACN+2H],2,0.5,43.04110184
+[M+2Na],2,0.5,45.97844284
+[M+2ACN+2H],2,0.5,84.068748
+[M+3ACN+2H],2,0.5,125.0941998
+[M+H],1,1,1.00727642
+[M+NH4],1,1,18.03382542
+[M+Na],1,1,22.98922142
+[M+CH3OH+H],1,1,33.03349142
+[M+K],1,1,38.96315942
+[M+ACN+H],1,1,42.03382542
+[M+2Na-H],1,1,44.97116642
+[M+2K-H],1,1,78.93469242
+[M+2ACN+H],1,1,83.06037442
+[M+4H] Acetamide,4,0.25,112.449645
+[M+3H+Na] Acetamide,4,0.25,134.43159
+[M+2H+2Na] Acetamide,4,0.25,156.413535
+[M+1H+3Na] Acetamide,4,0.25,178.39548
+[M+4Na] Acetamide,4,0.25,200.377425
+[M+3H] Acetamide,3,0.3333333,111.442368
+[M+2H+Na] Acetamide,3,0.3333333,133.424313
+[M+H+2Na] Acetamide,3,0.3333333,155.406258
+[M+3Na] Acetamide,3,0.3333333,177.388203
+[M+2H] Acetamide,2,0.5,110.435092
+[M+H+NH4] Acetamide,2,0.5,127.461641
+[M+H+Na] Acetamide,2,0.5,132.417037
+[M+H+K] Acetamide,2,0.5,148.390975
+[M+ACN+2H] Acetamide,2,0.5,151.461641
+[M+2Na] Acetamide,2,0.5,154.398982
+[M+2ACN+2H] Acetamide,2,0.5,192.489287
+[M+3ACN+2H] Acetamide,2,0.5,233.514739
+[M+H] Acetamide,1,1,109.427815
+[M+NH4] Acetamide,1,1,126.454364
+[M+Na] Acetamide,1,1,131.40976
+[M+CH3OH+H] Acetamide,1,1,141.45403
+[M+K] Acetamide,1,1,147.383698
+[M+ACN+H] Acetamide,1,1,150.454364
+[M+2Na-H] Acetamide,1,1,153.391705
+[M+2K-H] Acetamide,1,1,187.355231
+[M+2ACN+H] Acetamide,1,1,191.480913
+[M+4H]-H2O,4,0.25,-13.981459
+[M+3H+Na]-H2O,4,0.25,8.000486
+[M+2H+2Na]-H2O,4,0.25,29.982431
+[M+1H+3Na]-H2O,4,0.25,51.964376
+[M+4Na]-H2O,4,0.25,73.946321
+[M+3H]-H2O,3,0.3333333,-14.988736
+[M+2H+Na]-H2O,3,0.3333333,6.993209
+[M+H+2Na]-H2O,3,0.3333333,28.975154
+[M+3Na]-H2O,3,0.3333333,50.957099
+[M+2H]-H2O,2,0.5,-15.996012
+[M+H+NH4]-H2O,2,0.5,1.030537
+[M+H+Na]-H2O,2,0.5,5.985933
+[M+H+K]-H2O,2,0.5,21.959871
+[M+ACN+2H]-H2O,2,0.5,25.030537
+[M+2Na]-H2O,2,0.5,27.967878
+[M+2ACN+2H]-H2O,2,0.5,66.058183
+[M+3ACN+2H]-H2O,2,0.5,107.083635
+[M+H]-H2O,1,1,-17.003289
+[M+NH4]-H2O,1,1,0.02326
+[M+Na]-H2O,1,1,4.978656
+[M+CH3OH+H]-H2O,1,1,15.022926
+[M+K]-H2O,1,1,20.952594
+[M+ACN+H]-H2O,1,1,24.02326
+[M+2Na-H]-H2O,1,1,26.960601
+[M+2K-H]-H2O,1,1,60.924127
+[M+2ACN+H]-H2O,1,1,65.049809
+[M+4H] Methylated,4,0.25,19.05258068
+[M+3H+Na] Methylated,4,0.25,41.03452568
+[M+2H+2Na] Methylated,4,0.25,63.01647068
+[M+1H+3Na] Methylated,4,0.25,84.99841568
+[M+4Na] Methylated,4,0.25,106.9803607
+[M+3H] Methylated,3,0.3333333,18.04530426
+[M+2H+Na] Methylated,3,0.3333333,40.02724926
+[M+H+2Na] Methylated,3,0.3333333,62.00919426
+[M+3Na] Methylated,3,0.3333333,83.99113926
+[M+2H] Methylated,2,0.5,17.03802784
+[M+H+NH4] Methylated,2,0.5,34.06457684
+[M+H+Na] Methylated,2,0.5,39.01997284
+[M+H+K] Methylated,2,0.5,54.99391084
+[M+ACN+2H] Methylated,2,0.5,58.06457684
+[M+2Na] Methylated,2,0.5,61.00191784
+[M+2ACN+2H] Methylated,2,0.5,99.092223
+[M+3ACN+2H] Methylated,2,0.5,140.1176748
+[M+H] Methylated,1,1,16.03075142
+[M+NH4] Methylated,1,1,33.05730042
+[M+Na] Methylated,1,1,38.01269642
+[M+CH3OH+H] Methylated,1,1,48.05696642
+[M+K] Methylated,1,1,53.98663442
+[M+ACN+H] Methylated,1,1,57.05730042
+[M+2Na-H] Methylated,1,1,59.99464142
+[M+2K-H] Methylated,1,1,93.95816742
+[M+2ACN+H] Methylated,1,1,98.08384942
+[M+4H] Mercaptothiolated,4,0.25,82.04300568
+[M+3H+Na] Mercaptothiolated,4,0.25,104.0249507
+[M+2H+2Na] Mercaptothiolated,4,0.25,126.0068957
+[M+1H+3Na] Mercaptothiolated,4,0.25,147.9888407
+[M+4Na] Mercaptothiolated,4,0.25,169.9707857
+[M+3H] Mercaptothiolated,3,0.3333333,81.03572926
+[M+2H+Na] Mercaptothiolated,3,0.3333333,103.0176743
+[M+H+2Na] Mercaptothiolated,3,0.3333333,124.9996193
+[M+3Na] Mercaptothiolated,3,0.3333333,146.9815643
+[M+2H] Mercaptothiolated,2,0.5,80.02845284
+[M+H+NH4] Mercaptothiolated,2,0.5,97.05500184
+[M+H+Na] Mercaptothiolated,2,0.5,102.0103978
+[M+H+K] Mercaptothiolated,2,0.5,117.9843358
+[M+ACN+2H] Mercaptothiolated,2,0.5,121.0550018
+[M+2Na] Mercaptothiolated,2,0.5,123.9923428
+[M+2ACN+2H] Mercaptothiolated,2,0.5,162.082648
+[M+3ACN+2H] Mercaptothiolated,2,0.5,203.1080998
+[M+H] Mercaptothiolated,1,1,79.02117642
+[M+NH4] Mercaptothiolated,1,1,96.04772542
+[M+Na] Mercaptothiolated,1,1,101.0031214
+[M+CH3OH+H] Mercaptothiolated,1,1,111.0473914
+[M+K] Mercaptothiolated,1,1,116.9770594
+[M+ACN+H] Mercaptothiolated,1,1,120.0477254
+[M+2Na-H] Mercaptothiolated,1,1,122.9850664
+[M+2K-H] Mercaptothiolated,1,1,156.9485924
+[M+2ACN+H] Mercaptothiolated,1,1,161.0742744
