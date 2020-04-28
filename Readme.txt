@@ -1,3 +1,9 @@
+There are two scripts for analyzing compounds HRMSMS and finding them in a spectrum.  The first script is the fragmentor which takes a SMILES input and outputs a list of fragments based on SMARTS codes. This list is formatted to enter into the Spectrum Search script, assuming you have exported the exact mass from an MSMS spectrum that might be from the first SMILES.  It will iterate over the lists to find which fragment masses are in the spectrum.  You need to check the structures to see that they make sense, because it does not decided whether or not something like an Oxonium or protonation event is possible, it will just find the mass and list it.  
+
+Current work is incorporating these scripts into a GUI for analysis of mzXML files and will be made public once it is more completeed.  Currently you can view the mzXML chromatogram and mass spectra at retention times, and the fragmentor generates some structures to test your SMARTS code on before committing a 5-10 minute search function.
+
+Notes:
+
 Data must be formatted as in the included test data.
 Be carfeul to make sure that if you are using excel, there are no "blank" columns by selecting the empty columns of cells and deleting them if you are having an issue.
 
