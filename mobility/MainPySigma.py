@@ -45,108 +45,33 @@ mode). In the latter case the radii are temperature dependent.
 """
 
 from PySigmaFunctions import *
-import PySigmaFunctions as psf
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
-import math
-import potential
 from projectionApproximation import *
+
 
 #Ask to open the input geometry commented out to save development time
 #root = tk.Tk()
 #root.withdraw()
 #geometryInputFile = askopenfilename()
 
-mol = molecule(getInputGeometry("rna.inp"))
+geometry = getInputGeometry("c60.inp")
 
 #mode sets the radius correction method as a string: 
+#   There is no real useful reason to use any mode other than 'temperature and size'.
 #   'solid sphere' constant radius, based on vander waals radius of the atom.  This is simple case, and is made available in case future calculations can be absed off of the uncorrected radius.
 #   'temperature'  temperature dependent atom radius.
-#   'size'  includes temperature, accounts for superposition effects due to increasing number of atoms.  This is the default mode.
-
-PA = projectionApproximation(mol, temp=300, accuracy=1, buffr=1.4, maxCycles=1)
-
-mol2 = getInputGeometry("rna.inp")
-buffr = 1.19
-accuracy = 1
-conv = accuracy/100
-temp=5
-correction = 'solid sphere'
-
-a = molecule.getCenterMass(mol2)
-             
-b = molecule.translateCenter(mol2)
-c = molecule.rotateGeometry(b)
-d = molecule.projectionArea(c, buffr=1.4)
-e = monteCarloIntegration(d, c, buffr, conv, maxit=1000000000)
+#   'temperature and size'  includes temperature, accounts for superposition effects due to increasing number of atoms.  This is the default mode.
+#   Temp cannot be 0, MaxCycles seems to do best over 30 but certainly depends on input.  If you dont give it enough cycles it doesn't converge.
 
 
+#PA = projectionApproximation(geometry, temp=100, accuracy=1, buffr=1.4, maxCycles=100, mode='temperature and size')
+#print(PA)
 
 
-
-
-#This is a data viewing program just for checking.
-hitx = []
-hity =[]
-for i in e[1]:
-    hitx.append(i[0])
-    hity.append(i[1])
-
-carbonListx=[]   
-carbonListy=[]
-hydrogenListx=[]
-hydrogenListy=[]
-nitrogenListx=[]
-nitrogenListy=[]
-oxygenListx=[]
-oxygenListy=[]
-
-for i in c:
-    if i[0] == 'C':
-        carbonListx.append(float(i[2]))
-        carbonListy.append(float(i[3]))
-    if i[0] == 'H':
-        hydrogenListx.append(float(i[2]))
-        hydrogenListy.append(float(i[3]))
-    if i[0] == 'N':
-        nitrogenListx.append(float(i[2]))
-        nitrogenListy.append(float(i[3]))
-    if i[0] == 'O':
-        oxygenListx.append(float(i[2]))
-        oxygenListy.append(float(i[3]))     
-        
-        
-        
-        
-        
-        
-
-from PyQt5 import QtWidgets
-import pyqtgraph as pg
-import sys  # We need sys so that we can pass argv to QApplication
-
-class MainWindow(QtWidgets.QMainWindow):
-
-    def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
-        self.graphWidget = pg.PlotWidget()
-        self.setCentralWidget(self.graphWidget)
-        # plot data: x, y values
-        self.graphWidget.plot(hitx, hity, pen=None, symbol='o', symbolSize=1, symbolBrush='w' )
-        self.graphWidget.plot(carbonListx, carbonListy, pen=None, symbol='o', symbolSize=10, symbolBrush='y' )        
-        self.graphWidget.plot(oxygenListx, oxygenListy, pen=None, symbol='o', symbolSize=10, symbolBrush='r' )         
-        #self.graphWidget.plot(hydrogenListx, hydrogenListy, pen=None, symbol='o', symbolSize=10, symbolBrush='b' ) 
-        self.graphWidget.plot(nitrogenListx, nitrogenListy, pen=None, symbol='o', symbolSize=10, symbolBrush='g' )        
-        self.graphWidget.setTitle()
-        self.graphWidget.setLabel('left', text='Y-axis', units = 'Angstroms')
-        self.graphWidget.setLabel('bottom', text='X-axis', units='Angstroms')
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-    main = MainWindow()
-    main.show()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
+Temp= []
+CCSsolid =[]
+from tqdm import tqdm 
+for i in tqdm(range(50,601,50)):
+    CCSsolid.append(projectionApproximation(geometry, temp=i, accuracy=1, buffr=1.4, maxCycles=30, mode='temperature and size'))
+    Temp.append(i)

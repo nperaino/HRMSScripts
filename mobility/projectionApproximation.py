@@ -6,43 +6,58 @@ Created on Fri May 15 13:56:23 2020
 
 This is the main function for the projection approximation
 """
-import PySigmaFunctions
-from potential import *
+
+from potential import phs4
 from PySigmaFunctions import *
 import math
 from statistics import mean
+import adj_r
+import adj_heion
 
-def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycles=20):
+
+def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycles=100, mode = 'temperature and size'):
     data=[]
     sumarcor=0
     suma=0
     mina=0
     maxa=0
     conv = accuracy/100
+    he = 4
+    weight = getWeight(geometry)    
+    
+# This sets the arom radii based on the correction methods.
+    newgeometry=[]
+    if mode == 'solid sphere':
+        for row in geometry:
+            newgeometry.append([row[0], row[1], row[2], row[3], row[4], getAtomRadius(row[0])])
+    if mode == 'temperature':
+        newgeometry = adj_r.adj_r(geometry, temp)      
+    if mode == 'temperature and size':
+        newgeometry = adj_heion.adj_heion(geometry, temp)
+
     for i in range(1,maxCycles):
                 #Translate center mass coordinates to position "0,0,0"
                 #So that we can radnomly rotate around the center mass
-        centerGeometry = molecule.translateCenter(geometry.atoms)
+        centerGeometry = translateCenter(newgeometry)
                 #Select a random rotation around this center mass.
-        rotationGeometry = molecule.rotateGeometry(centerGeometry)
+        rotationGeometry = rotateGeometry(centerGeometry)
                 #Calculate the miaximum projection Area in the XY plane
                 #pramaterizes the box that includes the surface of the molecule.
-        projectionBox = molecule.projectionArea(rotationGeometry, buffr)
+        projectionBox = projectionArea(rotationGeometry, buffr)
                 #Monte Carlo integration of the space to find where the molecule is.
                 #Collision is determine by measurign the distance between the buffer gas
                 #and any of the atoms in the structure.  If a distance is found to be less
                 #than the two radii of the gas and atom, then there is a collision.
         area = monteCarloIntegration(projectionBox, rotationGeometry, buffr, conv)
                 #Temperature correction.
-        
-        tStar = temp/(1.7179E4/(area[0]/math.pi)**2)
+        tStar = temp/(1.7179E4/(area/math.pi)**2)
         omStar = phs4(tStar)     
         reducedArea = phs4(tStar)
         data.append(reducedArea)
-        areacor= omStar*area[0]
+        areacor= omStar*area
         sumarcor=sumarcor+areacor
         aareacor=sumarcor/i
-        suma=suma+area[0]
+        suma=suma+area
         aarea=suma/i
 
 #     --- do at least 10 different orientations, then calculate
@@ -54,12 +69,13 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
             for k in range(0,i):
                 chi=chi+(data[k]-aarea)**2
             deviation = math.sqrt(chi/(i-1))/math.sqrt(i)
-
-        mina=min(mina,area[0])
-        maxa=max(maxa,area[0])
+        mina=min(mina,area)
+        maxa=max(maxa,area)
+        
 #
 #     --------- Test for convergence :
 #
+
         if (i > 30):
 #           if ((100.*deviation/aarea).lt.(acc)) then
             if ((deviation/aarea) < (conv)):
@@ -73,37 +89,12 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
 #                   is done for each iteration or just at the end. Since a
 #                    correction for each iteration seems better, it is given
 #                    back from this subroutine
-            ave = mean(data)
-            tStar = temp/(1.7179E4/(ave/math.pi)**2)
-
-            omStar = phs4(tStar)
+                ave = mean(data)
+                tStar = temp/ (1.7179E4/(ave/math.pi) **2)
+                omStar = phs4(tStar)
+                areacor=omStar*ave
             
-
-#
-#            write(iout,*) ' Iterations            =',i
-#            write(iout,*) ' Note: the deviations below have nothing'
-#            write(iout,*) ' to do with the uncertanty of the average'
-#            write(iout,*) ' Maximum Cross-section =',maxa
-#            write(iout,*) ' Minimum Cross-section =',mina
-#            write(iout,*) ' Average Deviation     =',adev
-#            write(iout,*) ' Standard Deviation    =',sdev
-#            write(iout,*) ' Variance              =',var
-#            write(iout,*) ' Skewness              =',SKEW
-#            write(iout,*)
-#            write(iout,*) ' Average Cross-section =',
-#     1           ave,'+/-',deviation
-#            write(iout,*) ' Mobility              =',mob,'+/-',mob-dmob
-#            write(iout,*) ' Temperature           =',degK
-#            write(iout,*) ' The following values make only sense'
-#            write(iout,*) ' for a hard sphere calculation (no -s)!!'
-#            write(iout,*) ' Reduced Temperature    =',tstar
-#            write(iout,*) ' Omegastar              =',omstar
-#            write(iout,*) ' 1st ord. temp cor. Cross-sec. =',areacor
-#            write(iout,*) ' 2nd ord. temp cor. Cross-sec. =',aareacor
-#
-            cross=ave
-            crosst=aareacor
-            print('\n deveiation = ' + str(ave), 
-                  '\n 1st ord. temp cor. Cross-sec = ' + str(aareacor), 
-                  '\n 2nd ord. temp cor. Cross-sec = ' + str(areacor))
-            return
+                cross=ave
+                crosst=aareacor            
+                return aareacor
+    return aarea

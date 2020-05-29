@@ -22,7 +22,6 @@ The tabulated data are available open access from the publisher.
 
 import math
 from scipy import interpolate
-from graph import *
 
 def phs4(reducedTemperature):
 #   Reduced collision integral for a hard sphere - 4 potential

@@ -11,7 +11,6 @@ It is all the functions it uses for molecule transformations and list operations
 import csv
 import math
 import random
-from cmath import sqrt
 
 
 """Create an input geometry file as a Gaussian input using Gabedit.
@@ -89,125 +88,122 @@ def randomEulerAngles():
     return (a1, a2, a3)
 
 
+def getWeight(atoms):
+    weight = 0
+    for row in atoms:
+        weight = weight + getMass(row[0])
+    return weight
 
-class molecule:
-    def __init__(self, atoms):
-        self.atoms = atoms
-
-    def getCenterMass(atoms):
-        xCM = 0
-        yCM = 0
-        zCM = 0
-        weight = 0
-        for row in atoms:
-            xCM = xCM + getMass(row[0]) * float(row[2])
-            yCM = yCM + getMass(row[0]) * float(row[3])
-            zCM = zCM + getMass(row[0]) * float(row[4])
-            weight = weight + getMass(row[0])
+def getCenterMass(atoms):
+    xCM = 0
+    yCM = 0
+    zCM = 0
+    weight = 0
+    for row in atoms:
+        xCM = xCM + getMass(row[0]) * float(row[2])
+        yCM = yCM + getMass(row[0]) * float(row[3])
+        zCM = zCM + getMass(row[0]) * float(row[4])
+        weight = weight + getMass(row[0])
             
-        xCM = round(xCM/weight,8)
-        yCM = round(yCM/weight,8)
-        zCM = round(zCM/weight,8)
+    xCM = round(xCM/weight,8)
+    yCM = round(yCM/weight,8)
+    zCM = round(zCM/weight,8)
         
-        return [xCM, yCM, zCM]
+    return [xCM, yCM, zCM]
+
     
-    def translateCenter(atoms):
-        translated=[]
-        CM = molecule.getCenterMass(atoms)
-        for row in atoms:         
-            try:
-                x = round(float(row[2]),8)
-
-            except ValueError:
-                x = 0
-            try:
-                y = round(float(row[3]),8)
-
-            except ValueError:
-                y=0
-            try:
-                z = round(float(row[4]),8)
-                
-            except ValueError:
-                z = 0
+def translateCenter(atoms):
+    translated=[]
+    CM = getCenterMass(atoms)
+    for row in atoms:         
+        try:
+            x = round(float(row[2]),8)
+        except ValueError:
+            x = 0
+        try:
+            y = round(float(row[3]),8)
+        except ValueError:
+            y=0
+        try:
+            z = round(float(row[4]),8)
+        except ValueError:
+            z = 0
                     
-            translatedX = x-float(CM[0])
-            translatedY = y-float(CM[1])
-            translatedZ = z-float(CM[2])       
-            translated.append([row[0],row[1], translatedX, translatedY, translatedZ])              
-        return translated
+        translatedX = x-float(CM[0])
+        translatedY = y-float(CM[1])
+        translatedZ = z-float(CM[2])       
+        translated.append([row[0],row[1], translatedX, translatedY, translatedZ, row[5]])              
+    return translated
 
-    def rotateGeometry(atoms):
-        #make a tuple of random angles to rotate around.
-        randomAngles = randomEulerAngles()
-        a1= randomAngles[0]
-        a2= randomAngles[1]
-        a3= randomAngles[2]
+def rotateGeometry(atoms):
+    #make a tuple of random angles to rotate around.
+    randomAngles = randomEulerAngles()
+    a1= randomAngles[0]
+    a2= randomAngles[1]
+    a3= randomAngles[2]
         
-        #make a matrix to transfrom the coordinates with using the random angles.      
-        eumat11 = math.cos(a2)*math.cos(a3)-math.cos(a1)*math.sin(a3)*math.sin(a2)
-        eumat21 = -math.sin(a2)*math.cos(a3)-math.cos(a1)*math.sin(a3)*math.cos(a2)
-        eumat31 = math.sin(a1)*math.sin(a3)
-        eumat12 = math.cos(a2)*math.sin(a3)+math.cos(a1)*math.cos(a3)*math.sin(a2)
-        eumat22 = -math.sin(a2)*math.sin(a3)+math.cos(a1)*math.cos(a3)*math.cos(a2)
-        eumat32 = -math.sin(a1)*math.cos(a3)
-        eumat13 = math.sin(a1)*math.sin(a2)
-        eumat23 = math.sin(a1)*math.cos(a2)
-        eumat33 = math.cos(a1)
+    #make a matrix to transfrom the coordinates with using the random angles.      
+    eumat11 = math.cos(a2)*math.cos(a3)-math.cos(a1)*math.sin(a3)*math.sin(a2)
+    eumat21 = -math.sin(a2)*math.cos(a3)-math.cos(a1)*math.sin(a3)*math.cos(a2)
+    eumat31 = math.sin(a1)*math.sin(a3)
+    eumat12 = math.cos(a2)*math.sin(a3)+math.cos(a1)*math.cos(a3)*math.sin(a2)
+    eumat22 = -math.sin(a2)*math.sin(a3)+math.cos(a1)*math.cos(a3)*math.cos(a2)
+    eumat32 = -math.sin(a1)*math.cos(a3)
+    eumat13 = math.sin(a1)*math.sin(a2)
+    eumat23 = math.sin(a1)*math.cos(a2)
+    eumat33 = math.cos(a1)
         
-        # rather than calling numpy, the math was pretty straightforward
-        # so I left it in this way, but for visual understanding here it is:
-        
-        #eumat = [[eumat11, eumat12, eumat13],
-        #         [eumat21, eumat22, eumat23],
-        #         [eumat31, eumat32, eumat33]]
-        
-        rotated=[]
-        for row in atoms:
-            try:
-                x = round(float(row[2]),8)
-            except ValueError:
-                x = 0
-            try:
-                y = round(float(row[3]),8)
-            except ValueError:
-                y=0
-            try:
-                z = round(float(row[4]),8)    
-            except ValueError:
-                z = 0
-                
-            rotatedX = x*eumat11+y*eumat21+z*eumat31
-            rotatedY = x*eumat12+y*eumat22+z*eumat32
-            rotatedZ = x*eumat13+y*eumat23+z*eumat33
-            
-            rotated.append([row[0], row[1], rotatedX, rotatedY, rotatedZ])
-            
-        return rotated
-  #  def calcCollisionCrossSection(atoms, accuracy=2, maxIterations=1000, gasWeight=4):
-
-    def projectionArea(atoms, buffr):
-        maxx=-10000000
-        maxy=-10000000
-        minx=10000000
-        miny=10000000
-        for row in atoms:
-            maxx=max(maxx,(row[2]+getAtomRadius(row[0])))
-            maxy=max(maxy,(row[3]+getAtomRadius(row[0])))
-            minx=min(minx,(row[2]-getAtomRadius(row[0])))
-            miny=min(miny,(row[3]-getAtomRadius(row[0])))
+    # rather than calling numpy, the math was pretty straightforward
+    # so I left it in this way, but for visual understanding here it is:
     
-        maxx=maxx+buffr
-        maxy=maxy+buffr
-        minx=minx-buffr
-        miny=miny-buffr
+    #eumat = [[eumat11, eumat12, eumat13],
+    #         [eumat21, eumat22, eumat23],
+    #         [eumat31, eumat32, eumat33]]
         
-        return (minx,maxx,miny,maxy)
+    rotated=[]
+    for row in atoms:
+        try:
+            x = round(float(row[2]),8)
+        except ValueError:
+            x = 0
+        try:
+            y = round(float(row[3]),8)
+        except ValueError:
+            y=0
+        try:
+            z = round(float(row[4]),8)    
+        except ValueError:
+            z = 0
+                
+        rotatedX = x*eumat11+y*eumat21+z*eumat31
+        rotatedY = x*eumat12+y*eumat22+z*eumat32
+        rotatedZ = x*eumat13+y*eumat23+z*eumat33
+        rotated.append([row[0], row[1], rotatedX, rotatedY, rotatedZ, row[5]])         
+    return rotated
+#  def calcCollisionCrossSection(atoms, accuracy=2, maxIterations=1000, gasWeight=4):
+
+def projectionArea(geometry, buffr):
+    maxx=-10000000
+    maxy=-10000000
+    minx=10000000
+    miny=10000000
+    for row in geometry:
+        maxx=max(maxx,(row[2]+(row[5])))
+        maxy=max(maxy,(row[3]+(row[5])))
+        minx=min(minx,(row[2]-(row[5])))
+        miny=min(miny,(row[3]-(row[5])))
+    
+    maxx=maxx+buffr
+    maxy=maxy+buffr
+    minx=minx-buffr
+    miny=miny-buffr
+        
+    return (minx,maxx,miny,maxy)
  
 #do a projection area on the molecule to get the area,
 #prepare the atoms first by doing a getCenterMass, then translateCenter.
         
-def monteCarloIntegration(area, atoms, buffr, conv, maxit=100000):
+def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
     minx = area[0]
     maxx = area[1]
     miny = area[2]
@@ -223,10 +219,10 @@ def monteCarloIntegration(area, atoms, buffr, conv, maxit=100000):
         ntry = ntry+1
         xr = random.uniform(0,1)*(maxx-minx) + minx
         yr = random.uniform(0,1)*(maxy-miny) + miny
-        for row in atoms:
+        for row in geometry:
             x = row[2]
             y = row[3]
-            rad = getAtomRadius(row[0]) + buffr    
+            rad = (row[5]) + buffr    
             if (abs(x-xr)) <= rad or (abs(y-yr)) <= rad:            
                 dist = math.sqrt((x-xr)**2 + (y-yr)**2)
                 if dist <= rad:
@@ -239,7 +235,7 @@ def monteCarloIntegration(area, atoms, buffr, conv, maxit=100000):
                         err = math.sqrt(((ntry*nhit-nhit**2)/(ntry**3)))
                         if err <= conv and ntry>200:  
                             #print('Area= ',area,' Estimated error = ',err*100,' %', 'after ', ntry, ' iterations')
-                            return area,hits,miss
+                            return float(area)
                         else:
                             break
                 else:
@@ -248,7 +244,7 @@ def monteCarloIntegration(area, atoms, buffr, conv, maxit=100000):
                 miss.append([xr,yr])
 
     print('Warning, failed to converge after ', maxit, ' iterations')
-    return area,hits,miss
+    return float(area)
 
 def atomNumbers(geometry):
     numberedGeometry=[]
