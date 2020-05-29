@@ -1,4 +1,5 @@
-I still need to connect up the differnt correction methods and round out input parsing.
+Input file is generated as an XYZ Gaussian input.  I use Gabedit to do geometry optimization and then create a gaussian input.
+There is no specific reason I am doing it this way other than it is quick.
 
 This is a rewrite of "Sigma"
 
