@@ -72,6 +72,6 @@ geometry = getInputGeometry("c60.inp")
 Temp= []
 CCSsolid =[]
 from tqdm import tqdm 
-for i in tqdm(range(50,601,50)):
-    CCSsolid.append(projectionApproximation(geometry, temp=i, accuracy=1, buffr=1.4, maxCycles=30, mode='temperature and size'))
+for i in tqdm(range(50,605,50)):
+    CCSsolid.append(projectionApproximation(geometry, temp=i, accuracy=1, buffr=0.109, maxCycles=50, mode='temperature'))
     Temp.append(i)

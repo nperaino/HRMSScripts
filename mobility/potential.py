@@ -37,10 +37,10 @@ def phs4(reducedTemperature):
            1.000,1.000,1.000,1.000,1.000,1.000,1.000]
 #sets up to see if the temperature is even in range It might not be neccesary with pchip interpolation,
 #but it will at least catch some odd errors coming through.
-    if reducedTemperature > Xt[41]: 
+    if reducedTemperature >= Xt[41]: 
         q=1.00
         return float(q)
-    if reducedTemperature < Xt[0]:
+    if reducedTemperature <= Xt[0]:
         q=1.4691/math.sqrt(reducedTemperature)
         return float(q)
 #interpolates using scipy "pchip" tested to give best results with this data set.  
@@ -110,10 +110,10 @@ def P16_6_4(t,g):
            [.33918,.34592,.35159,.35647,.36074,.36453]]
 
 
-    if (t.real > Xt[46]):
+    if (t.real >= Xt[46]):
         q=0.9229*(16.*(1.+g)/(16.*(3.+g)-12*(1.+g)))**0.125/(t**0.125)
         return q      
-    if (t.real < Xt[0]):
+    if (t.real <= Xt[0]):
         q=1.4714*(48.*(1.-g)/(16.*(3.+g)-12.*(1.+g)))**0.5/(t**0.5)
         return q      
     if ((g.real > Xg[5]) or (g.real < Xg[0])):
@@ -184,10 +184,10 @@ def P12_6_4(t,g):
            [.26342,.27109,.27775,.28365,.28897,.29379],
            [.25386,.26129,.26775,.27347,.27862,.28329]]
 
-    if (t > Xt[46]):
+    if (t >= Xt[46]):
         q=0.9022*(12*(1.+g)/(12.*(3.+g)-12*(1.+g)))**0.1666/(t**0.1666)
         return q
-    if (t < Xt[0]):
+    if (t <= Xt[0]):
         q=1.4714*(36.*(1.-g)/(12.*(3.+g)-12.*(1.+g)))**0.5/(t**0.5)
         return q
     if ((g > Xg[5]) or (g < Xg[0])):
@@ -197,7 +197,7 @@ def P12_6_4(t,g):
     
     function_12_6_4 = interpolate.interp2d(Xg, Xt, Ygt, kind='cubic')   
     q = function_12_6_4(g, t)   
-    
+ 
     return float(q)
 
 def P8_6_4(t,g):
@@ -258,11 +258,11 @@ def P8_6_4(t,g):
            [.16080,.16834,.17577,.18312,.19060,.19832],
            [.15228,.15954,.16669,.17377,.18096,.18840]] 
 
-    if (t > Xt[46]):
+    if (t >= Xt[46]):
         q=0.8661*(8.*(1.+g)/(8.*(3.+g)-12*(1.+g)))**0.25/(t**0.25)
         return q
 
-    if (t < Xt[0]):
+    if (t <= Xt[0]):
         q=1.4714*(24.*(1.-g)/(8.*(3.+g)-12.*(1.+g)))**0.5/(t**0.5)
         return q
 

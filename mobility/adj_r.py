@@ -5,7 +5,7 @@ Created on Wed May 20 12:10:29 2020
 @author: Nick
 
 # ***********************************************************************
-#     read the 6-n params file. Format: atnum, rep, rmin,emin
+# read the 6-n params file. Format: atnum, rep, rmin,emin
 # here is an example file for MM3 params
 # 0 0.205 1.53 0.026
 # 1 12.0 1.62 0.02
@@ -14,7 +14,8 @@ Created on Wed May 20 12:10:29 2020
 # 11 12.0 2.70 0.057
 #
 # references: MM3 params: Allinger et al. Theochem, Vol312, 69 (1994)
-# and Halgren, JACS, 114, 7872 (1992)
+# and 
+# Halgren, JACS, 114, 7827 (1992) https://doi.org/10.1021/ja00046a032
 #
 # ***********************************************************************
 
@@ -39,7 +40,7 @@ def adj_r(geometry, temp):
     rep=[]
     rmin=[]
     emin=[]    
-    with open('mm3.pot') as csvfile:
+    with open('adj.pot') as csvfile:
         LJParameters = csv.reader(csvfile, delimiter=" ")
         for row in LJParameters:
             sixnfile.append(row)      
@@ -76,12 +77,11 @@ def adj_r(geometry, temp):
     gam=[]
     atomr=[]
 
-    for i in range(0,len(geometry)):
+    for i in range(0,len(rmin)):
         radd=rminbuf
-        rmin[i]=rmin[i]
-
-
-
+        rmin[i]=2.0*rmin[i]
+        radd=2.0*rminbuf
+        
 # Combination rules from the halgren paper "HHG" for radii and (14) for emin
         reg0=(rmin[i]**3 + radd**3)/(rmin[i]**2 + radd**2)
         rmin[i]=reg0
@@ -89,20 +89,19 @@ def adj_r(geometry, temp):
 
 # Units: kcal/mol for potential, Angstroms for radii
 #     calculate constant C4 of r^-4 term
-        cfour.append(0.5*polbuf*(3.3205E2/(len(geometry)**2)))
+        cfour.append(0.5*polbuf*(3.3205E2/(len(rmin)**2)))
 
 #     find new position of potential minimum [dV(n_6_4)/dr = 0]
 #     it should reasonably be between 1 and 10 angstrom or something is wrong.
 #     pass the equation coefficients to the function using current iterations rep, emin, rmin, and cfour values
 #     so the bounded Brent optimization function can accept the function.
-        #minimum = minimize_scalar(dvdr,args=(rep[i], emin[i], rmin[i], cfour[i]), bounds=(1, 10), tol=3E-8, method='bounded')        
-        minimum = minimize_scalar(vnsixfour,args=(rep[i], emin[i], rmin[i], cfour[i]), bounds=(1, 10), tol=3E-8, method='bounded')
+        minimum = minimize_scalar(vnsixfour,args=(rep[i], emin[i], rmin[i], cfour[i]),bracket=(1,10), options={'xtol':3E-8}, method='golden')
         rnew.append(minimum.x)
+        
 
 #     get new well depth
         enew.append(-1*vnsixfour(rnew[i],rep[i],emin[i],rmin[i],cfour[i]))
         tstar=temp/(enew[i]*5.032E2)
-
 #     calculate gamma
         xnumratr = 4 * cfour[i] * (6-rep[i])
         dnomnatr = 3 * rep[i] * enew[i] * rnew[i]**4 + cfour[i] * (rep[i]-12)
@@ -113,7 +112,7 @@ def adj_r(geometry, temp):
 
 #     calculate the new radius
         atomr.append(rnew[i]*math.sqrt(qN))
-            
+ 
 #        print('old:', numberedGeometry[i],rmin[i],emin[i])
 #        print('new:', numberedGeometry[i],rnew[i],enew[i],gam[i])
 #D       write(*,*) 'omega', qN,atomr(i),tstar 
@@ -121,18 +120,7 @@ def adj_r(geometry, temp):
     for row, radius in zip(geometry, atomr):
         newgeometry.append([row[0], row[1], row[2], row[3], row[4], radius])
     return newgeometry
-
-    
-# The first derivative of a n-6 potential with a r-4 tagged on
-def dvdr(x,rep,emin,rmin,cfour):
-    gam=1.0
-    pre=rep*emin/(rep*(3.0+gam)-(12.0*(1+gam)))
-    vrep=-pre*(12.0*(1+gam)/x *(rmin/x)**rep)
-    vsix=pre*4.0*gam*6.0/x *(rmin/x)**6
-    vfour=4.0*cfour/(x**5)
-    dvdr= vrep+vsix+vfour
-    return dvdr.real
-          
+         
 # The n -6 -4 potential
 def vnsixfour(x,rep,emin,rmin,cfour):
     gam=1.0
@@ -151,11 +139,3 @@ def QRED(t,g,r):
     X = [8., 12., 16.]
     QN = interpolate.pchip_interpolate(X, Q, r)   
     return QN
- 
-
-        
-#some settings for testing       
-#temp = 500            
-#mol = getInputGeometry("C60.inp")       
-#m = adj_r(mol, temp)
-#n = atomNumbers(mol)

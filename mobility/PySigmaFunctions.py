@@ -183,10 +183,10 @@ def rotateGeometry(atoms):
 #  def calcCollisionCrossSection(atoms, accuracy=2, maxIterations=1000, gasWeight=4):
 
 def projectionArea(geometry, buffr):
-    maxx=-10000000
-    maxy=-10000000
-    minx=10000000
-    miny=10000000
+    maxx=-1E30
+    maxy=-1E30
+    minx=1E30
+    miny=1E30
     for row in geometry:
         maxx=max(maxx,(row[2]+(row[5])))
         maxy=max(maxy,(row[3]+(row[5])))
@@ -213,8 +213,6 @@ def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
     
     nhit=0
     ntry=0
-    hits=[]
-    miss=[]
     while ntry < maxit:
         ntry = ntry+1
         xr = random.uniform(0,1)*(maxx-minx) + minx
@@ -222,30 +220,29 @@ def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
         for row in geometry:
             x = row[2]
             y = row[3]
-            rad = (row[5]) + buffr    
+            rad = row[5] + buffr    
             if (abs(x-xr)) <= rad or (abs(y-yr)) <= rad:            
                 dist = math.sqrt((x-xr)**2 + (y-yr)**2)
                 if dist <= rad:
                     nhit = nhit + 1
-                    hits.append([xr, yr])
                     area = boxsize*nhit/ntry               
                     if ntry < 1000:
                         break
                     else:
                         err = math.sqrt(((ntry*nhit-nhit**2)/(ntry**3)))
                         if err <= conv and ntry>200:  
-                            #print('Area= ',area,' Estimated error = ',err*100,' %', 'after ', ntry, ' iterations')
                             return float(area)
                         else:
                             break
                 else:
                     continue
             else:
-                miss.append([xr,yr])
-
+                continue
     print('Warning, failed to converge after ', maxit, ' iterations')
     return float(area)
 
+
+#Converts the symbols into atom numbers, add others as neccesary in same format
 def atomNumbers(geometry):
     numberedGeometry=[]
     for row in geometry:

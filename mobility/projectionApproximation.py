@@ -15,8 +15,9 @@ import adj_r
 import adj_heion
 
 
-def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycles=100, mode = 'temperature and size'):
+def projectionApproximation(geometry, temp=300, accuracy=1, buffr=0.109, maxCycles=100, mode = 'temperature and size'):
     data=[]
+    datacor=[]
     sumarcor=0
     suma=0
     mina=0
@@ -24,7 +25,7 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
     conv = accuracy/100
     he = 4
     weight = getWeight(geometry)    
-    
+
 # This sets the arom radii based on the correction methods.
     newgeometry=[]
     if mode == 'solid sphere':
@@ -49,17 +50,18 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
                 #and any of the atoms in the structure.  If a distance is found to be less
                 #than the two radii of the gas and atom, then there is a collision.
         area = monteCarloIntegration(projectionBox, rotationGeometry, buffr, conv)
-                #Temperature correction.
+        
+        #First Order Temperature Correction
         tStar = temp/(1.7179E4/(area/math.pi)**2)
         omStar = phs4(tStar)     
-        reducedArea = phs4(tStar)
-        data.append(reducedArea)
         areacor= omStar*area
-        sumarcor=sumarcor+areacor
-        aareacor=sumarcor/i
-        suma=suma+area
-        aarea=suma/i
-
+        
+        data.append(area) 
+        datacor.append(areacor)
+ 
+        averageArea = mean(data)
+        averageCorrectedArea = mean(datacor)
+        
 #     --- do at least 10 different orientations, then calculate
 #     statistical errors (sigma) assuming a gaussian distribution
 #     and test for convergence.
@@ -67,7 +69,7 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
         chi=0.0       
         if i > 10:
             for k in range(0,i):
-                chi=chi+(data[k]-aarea)**2
+                chi=chi+(data[k]-area)**2
             deviation = math.sqrt(chi/(i-1))/math.sqrt(i)
         mina=min(mina,area)
         maxa=max(maxa,area)
@@ -77,10 +79,9 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
 #
 
         if (i > 30):
-#           if ((100.*deviation/aarea).lt.(acc)) then
-            if ((deviation/aarea) < (conv)):
-                mob=(1.0/math.sqrt(temp*weight*he/(weight+he)))*1.85e4/aarea
-                dmob=(1.0/math.sqrt(temp*weight*he/(weight+he)))*1.85e4/(aarea+deviation)
+            if ((deviation/averageArea) < (conv)):
+                mob=(1.0/math.sqrt(temp*weight*he/(weight+he)))*1.85e4/averageArea
+                dmob=(1.0/math.sqrt(temp*weight*he/(weight+he)))*1.85e4/(averageArea+deviation)
                 
                 
 #           Do some first order temperature correction, 1.7179D+4 includes 0.205
@@ -89,12 +90,15 @@ def projectionApproximation(geometry, temp=300, accuracy=1, buffr=1.09, maxCycle
 #                   is done for each iteration or just at the end. Since a
 #                    correction for each iteration seems better, it is given
 #                    back from this subroutine
-                ave = mean(data)
-                tStar = temp/ (1.7179E4/(ave/math.pi) **2)
+                tStar = temp/ (1.7179E4/(averageArea/math.pi) **2)
                 omStar = phs4(tStar)
-                areacor=omStar*ave
+                averageCorrectedArea = omStar*averageArea
             
-                cross=ave
-                crosst=aareacor            
-                return aareacor
-    return aarea
+                if mode == 'solid sphere':
+                    return averageCorrectedArea
+                else:
+                    return averageArea
+    if mode == 'solid sphere':
+        return averageCorrectedArea
+    else:
+        return averageArea
