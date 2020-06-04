@@ -1,7 +1,20 @@
 Input file is generated as an XYZ Gaussian input.  I use Gabedit to do geometry optimization and then create a gaussian input.
 There is no specific reason I am doing it this way other than it is quick.
 
-This is a rewrite of "Sigma"
+This will mimic the graph for C60 fullerene temperature dependent size data shown in:
+
+Effect of the Long-Range Potential on Ion
+Mobility Measurements
+Thomas Wyttenbach, Gert von Helden, Joseph J. Batka, Jr., Douglas
+Carlat, and Michael T. Bowers
+J Am Soc Mass Spectrom
+1997, 8, 275-282)
+
+But significant subroutine editing has been done regarding removal of interpolation parameterization since SciPy can handel a lot of this
+more simply than in Fortran.  I have not yet figured out why the buffer gas radius is off by a factor of 10.  So if buffr variable is set
+to 1.09, it is wrong, but 0.109 gives the correct predictions.
+
+This is a rewrite of "Sigma" in python.
 
    T. Wyttenbach, G. von Helden,... M.T. Bowers; JASMS 1997, 8,
    275 
