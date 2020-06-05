@@ -1,3 +1,13 @@
+How to run:
+Download everything to a file and load up the MainPySigma script.  This will ask for whether you want to run a single temperature
+or generate a curve.  There are the various methods and parameters developed over time included, but I have it set to only run the
+temperature and size corrected method
+
+Open an input file and select the settings you want to run at as prompted.
+If a temperature curve is selected, it will save the data as a csv for graphing elsewhere.
+A summary graph will output at the end if you just want to check quickly.
+A run at 1% accuracy and 50 iterations takes only a minute or so for a temperature curve of C60.inp example.
+
 There are two scripts for analyzing compounds HRMSMS and finding them in a spectrum.  The first script is the fragmentor which takes a SMILES input and outputs a list of fragments based on SMARTS codes. This list is formatted to enter into the Spectrum Search script, assuming you have exported the exact mass from an MSMS spectrum that might be from the first SMILES.  It will iterate over the lists to find which fragment masses are in the spectrum.  You need to check the structures to see that they make sense, because it does not decided whether or not something like an Oxonium or protonation event is possible, it will just find the mass and list it.  
 
 Current work is incorporating these scripts into a GUI for analysis of mzXML files and will be made public once it is more completeed.  Currently you can view the mzXML chromatogram and mass spectra at retention times, and the fragmentor generates some structures to test your SMARTS code on before committing a 5-10 minute search function.
