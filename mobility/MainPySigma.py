@@ -44,16 +44,16 @@ parameters supplied by a second parameter file (Lennard-Jones
 mode). In the latter case the radii are temperature dependent.
 """
 
-from PySigmaFunctions import *
+from PySigmaFunctions import getInputGeometry
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename 
-from projectionApproximation import *
+from projectionApproximation import projectionApproximation
 from tqdm import tqdm 
 from PyQt5 import QtWidgets
-from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 import sys
-import os
+import csv
+
 
 print('This script will calculate the temperature and size dependent collisional cross setion (CCS)')
 print('from an input file generated using Gabedit as a Gaussian input file.  This way, Gabedit or Gaussian')
@@ -65,7 +65,7 @@ input('Please press Enter to select an input file')
 root = tk.Tk()
 root.withdraw()
 geometryInputFile = askopenfilename()
-geometry = getInputGeometry("c60.inp")
+geometry = getInputGeometry(geometryInputFile)
 print('Enter 1 for single temperature run')
 print('Enter 2 for curve')
 tempType = input('Enter Selection:')
