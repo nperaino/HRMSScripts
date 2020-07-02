@@ -1,3 +1,5 @@
+This script will allow for the PA and PSA calculations.
+
 Input file is generated as an XYZ Gaussian input.  I use Gabedit to do geometry optimization and then create a gaussian input.
 There is no specific reason I am doing it this way other than it is quick.
 
@@ -27,6 +29,22 @@ The goal is to make a community accessible module for advancement of ion-mobilit
 There are three modes built up from a simple van der waals radius approximation to molecule size
 to a temperature and size dependent super position correction.  The "best" model is to apply the
 'size and temperature' mode which will acount for size deviations as a result of... size and temperature.
-There is not a mode for just size, as development first started with the simple model then added temperature,
-then size, and then in the projections superposition approximation, a shape function for concavity was added 
-(not here yet).
+
+The PSA algorithm is implemented here but is much slower than standard PA. You will get the same answer for small
+molecules as you would for large ones, so it is a waste of time for molecules under ~1000 atoms.
+It is implemented here using the shape factor derived from the ratio of the convexhull/concavehull area
+and the collision probability tailing function is from:
+
+"A novel projection approximation algorithm for the fast and 
+accurate computation of molecular collision cross sections.""
+(I) Method
+Christian Bleiholder, Thomas Wyttenbach, Michael T. Bowers
+https://doi.org/10.1016/j.ijms.2011.06.014
+(II) Model parameterization and definition of empirical shape factors for proteins
+Christian Bleiholder, Stephanie Contreras, Thanh D. Do, Michael T. Bowers
+https://doi.org/10.1016/j.ijms.2012.08.027
+
+I am not sure how accurate it is yet, and the alpha value for the alpha-shape function (concave hull) is a bit uncertain to me.
+It seemed like 6 made sense because it maximized the calculated area for c60 and insulin, but this could be completely wrong.
+Still need to round out the script a bit but the main functions are working well.
+
