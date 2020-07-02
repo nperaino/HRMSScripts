@@ -11,6 +11,8 @@ It is all the functions it uses for molecule transformations and list operations
 import csv
 import math
 import random
+from scipy.spatial import ConvexHull
+from alphaShape import alpha_shape_3D
 
 
 """Create an input geometry file as a Gaussian input using Gabedit.
@@ -115,7 +117,7 @@ def getCenterMass(atoms):
 def translateCenter(atoms):
     translated=[]
     CM = getCenterMass(atoms)
-    for row in atoms:         
+    for row in atoms:   
         try:
             x = round(float(row[2]),8)
         except ValueError:
@@ -163,15 +165,15 @@ def rotateGeometry(atoms):
     rotated=[]
     for row in atoms:
         try:
-            x = round(float(row[2]),8)
+            x = float(row[2])
         except ValueError:
             x = 0
         try:
-            y = round(float(row[3]),8)
+            y = float(row[3])
         except ValueError:
             y=0
         try:
-            z = round(float(row[4]),8)    
+            z = float(row[4])
         except ValueError:
             z = 0
                 
@@ -199,7 +201,30 @@ def projectionArea(geometry, buffr):
     miny=miny-buffr
         
     return (minx,maxx,miny,maxy)
- 
+
+def projectionVolume(geometry, buffr):
+    maxx=-1E30
+    maxy=-1E30
+    maxz=-1E30
+    minx=1E30
+    miny=1E30
+    minz=1E30
+    for row in geometry:
+        maxx=max(maxx,(row[2]+(row[5])))
+        maxy=max(maxy,(row[3]+(row[5])))
+        maxz=max(maxz,(row[4]+(row[5])))
+        minx=min(minx,(row[2]-(row[5])))
+        miny=min(miny,(row[3]-(row[5])))
+        minz=min(minz,(row[4]-(row[5])))
+    
+    maxx=maxx+buffr
+    maxy=maxy+buffr
+    maxz=maxz+buffr
+    minx=minx-buffr
+    miny=miny-buffr
+    minz=minz-buffr
+        
+    return (minx,maxx,miny,maxy,minz,maxz) 
 #do a projection area on the molecule to get the area,
 #prepare the atoms first by doing a getCenterMass, then translateCenter.
         
@@ -225,13 +250,13 @@ def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
                 dist = math.sqrt((x-xr)**2 + (y-yr)**2)
                 if dist <= rad:
                     nhit = nhit + 1
-                    area = boxsize*nhit/ntry               
+                    aarea = boxsize*nhit/ntry               
                     if ntry < 1000:
                         break
                     else:
                         err = math.sqrt(((ntry*nhit-nhit**2)/(ntry**3)))
                         if err <= conv and ntry>200:  
-                            return float(area)
+                            return float(aarea)
                         else:
                             break
                 else:
@@ -239,8 +264,58 @@ def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
             else:
                 continue
     print('Warning, failed to converge after ', maxit, ' iterations')
-    return float(area)
+    return float(aarea)
 
+def threeDmontecarloIntegration(volume, geometry, conv, maxit=1000000):
+    minx = volume[0]
+    maxx = volume[1]
+    miny = volume[2]
+    maxy = volume[3]
+    minz = volume[4]
+    maxz = volume[5]
+    hits=[]
+    
+    cubesize=(maxx-minx)*(maxy-miny)*(maxz-minz)
+    
+    nhit=0
+    ntry=0
+    
+    while ntry < maxit:
+        ntry = ntry+1
+        xr = random.uniform(0,1)*(maxx-minx) + minx
+        yr = random.uniform(0,1)*(maxy-miny) + miny
+        zr = random.uniform(0,1)*(maxz-minz) + minz
+        for row in geometry:
+            x = float(row[2])
+            y = float(row[3])
+            z = float(row[4])  
+            rad = float(row[5])
+            if (abs(x-xr)) <= rad or (abs(y-yr)) <= rad or (abs(z-zr))<= rad:         
+                dist = math.sqrt((x-xr)**2 + (y-yr)**2 + (z-zr)**2)
+                if dist <= rad:
+                    hits.append([xr,yr,zr])
+                    nhit = nhit + 1
+                    vol = cubesize*nhit/ntry               
+                    if ntry < 1000:
+                        break
+                    else:
+                        err = math.sqrt(((ntry*nhit-nhit**2)/(ntry**3)))
+                        if err <= conv and ntry>200:  
+                            hull = ConvexHull(hits)
+                            convexarea = hull.area
+                            concavearea = alpha_shape_3D(hits, 6)
+                            return float(vol),float(convexarea), concavearea
+                        else:
+                            break
+                else:
+                    continue
+            else:
+                continue
+    print('Warning, failed to converge after ', maxit, ' iterations')
+    hull = ConvexHull(hits)
+    convexarea = hull.area
+    concavearea = alpha_shape_3D(hits, 6)
+    return float(vol),float(convexarea), float(concavearea)
 
 #Converts the symbols into atom numbers, add others as neccesary in same format
 def atomNumbers(geometry):

@@ -47,12 +47,13 @@ mode). In the latter case the radii are temperature dependent.
 from PySigmaFunctions import getInputGeometry
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename 
-from projectionApproximation import projectionApproximation
+from projectionApproximation import projectionApproximation, PSA
 from tqdm import tqdm 
 from PyQt5 import QtWidgets
 import pyqtgraph as pg
 import sys
 import csv
+from psa import shapeFactor
 
 
 print('This script will calculate the temperature and size dependent collisional cross setion (CCS)')
@@ -68,6 +69,7 @@ geometryInputFile = askopenfilename()
 geometry = getInputGeometry(geometryInputFile)
 print('Enter 1 for single temperature run')
 print('Enter 2 for curve')
+print('Enter 3 for PSA curve')
 tempType = input('Enter Selection:')
 print(tempType)
 print('')
@@ -141,3 +143,49 @@ elif tempType == '2':
     if __name__ == '__main__':
         main()
 
+elif tempType == '3':
+    Temp= []
+    CCS =[]
+    SF = shapeFactor(geometry, acc)
+    for i in tqdm(range(20,605,20)):
+        CCS.append(SF*PSA(geometry, temp=i, accuracy=acc, buffr=bufferRadius , maxCycles=maxC))
+        Temp.append(i)
+    print('Please select a save file location:')
+
+    saveData = asksaveasfilename()      
+    CCSdata =[]
+    for i,j in zip(Temp, CCS):
+        CCSdata.append([i,j])
+    with open(saveData+'.csv', 'w', newline='') as csvfile: 
+        csvwriter = csv.writer(csvfile)
+        headers=['Temperature','CCS']
+        # writing the headers 
+        csvwriter.writerow(headers) 
+        # writing the data rows
+        csvwriter.writerows(CCSdata)
+    print('A graph will display the results.')
+    title = input('please input a title for the graph:')
+    class MainWindow(QtWidgets.QMainWindow):
+
+        def __init__(self, *args, **kwargs):
+            super(MainWindow, self).__init__(*args, **kwargs)
+            self.graphWidget = pg.PlotWidget()
+            self.setCentralWidget(self.graphWidget)
+            self.graphWidget.setTitle("<span style=\"color:black;font-size:10px\">"+title+"  </span>")
+            self.graphWidget.setLabel('left', 'CCS (A<sup>2</sup>)', color='black', size=30)
+            self.graphWidget.setLabel('bottom', 'Temperature (K)', color='black', size=30)
+            self.graphWidget.setBackground('w')
+            pen = pg.mkPen(color=(0, 0, 0))
+            self.graphWidget.showGrid(x=True, y=True)
+            self.graphWidget.plot(Temp, CCS, pen=pen)
+
+
+    def main():
+        app = QtWidgets.QApplication(sys.argv)
+        main = MainWindow()
+        main.show()
+        sys.exit(app.exec_())
+
+
+    if __name__ == '__main__':
+        main()

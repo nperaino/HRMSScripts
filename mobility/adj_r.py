@@ -22,11 +22,12 @@ Created on Wed May 20 12:10:29 2020
 temperature corrected radii was set by using -s flag in Sigma.
 
 """
-from PySigmaFunctions import getAtomRadius, translateCenter, rotateGeometry, projectionArea, monteCarloIntegration, atomNumbers
+from PySigmaFunctions import atomNumbers
 import csv
 import math
 from scipy.optimize import minimize_scalar
-from potential import *
+from potential import P16_6_4, P12_6_4, P8_6_4
+from scipy import interpolate
 
 
 
