@@ -245,7 +245,7 @@ def monteCarloIntegration(area, geometry, buffr, conv, maxit=1000000):
         for row in geometry:
             x = row[2]
             y = row[3]
-            rad = row[5] + buffr    
+            rad = row[5]  
             if (abs(x-xr)) <= rad or (abs(y-yr)) <= rad:            
                 dist = math.sqrt((x-xr)**2 + (y-yr)**2)
                 if dist <= rad:
@@ -304,7 +304,7 @@ def threeDmontecarloIntegration(volume, geometry, conv, maxit=1000000):
                             hull = ConvexHull(hits)
                             convexarea = hull.area
                             concavearea = alpha_shape_3D(hits, 6)
-                            return float(vol),float(convexarea), concavearea
+                            return float(vol),float(convexarea), float(concavearea)
                         else:
                             break
                 else:
