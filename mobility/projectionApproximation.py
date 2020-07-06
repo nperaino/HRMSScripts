@@ -14,7 +14,7 @@ from statistics import mean
 import adj_r
 import adj_heion
 from psa import superpositionArea
-
+from tqdm import tqdm
 
 def projectionApproximation(geometry, temp=300, accuracy=1, buffr=0.109, maxCycles=100, mode = 'temperature and size'):
     data=[]
@@ -112,10 +112,7 @@ def PSA(geometry, temp=300, accuracy=1, buffr=1.09, maxCycles=100):
     mina=0
     maxa=0
     conv = accuracy/100
-    newgeometry=[]
-    for row in geometry:
-        newgeometry.append([row[0], row[1], row[2], row[3], row[4], getAtomRadius(row[0])])
-    
+    newgeometry = adj_heion.adj_heion(geometry, temp)
     for i in range(1,maxCycles):
                 #Translate center mass coordinates to position "0,0,0"
                 #So that we can radnomly rotate around the center mass
@@ -126,7 +123,7 @@ def PSA(geometry, temp=300, accuracy=1, buffr=1.09, maxCycles=100):
                 #pramaterizes the box that includes the surface of the molecule.
         projectionBox = projectionArea(rotationGeometry, buffr)
                 #Monte Carlo integration of the space to find where the molecule is.
-                #Collision is determine by measurign the distance between the buffer gas
+                #Collision is determine by measuring the distance between the buffer gas
                 #and any of the atoms in the structure.  If a distance is found to be less
                 #than the two radii of the gas and atom, then there is a collision.
         

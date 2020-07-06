@@ -44,7 +44,7 @@ def superpositionArea(area, geometry, buffr, conv, temp, maxit=200000):
             x = row[2]
             y = row[3]
             atom = row[0]
-            rad = row[5]   
+            rad = row[5]
             #This bit deviates from the other methods by addition of the probability for tailing.
             hit=probHit(x,y, xr, yr, buffr, rad, atom, temp)     
             if hit == True:            
