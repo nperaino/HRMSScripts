@@ -13,8 +13,7 @@ J Am Soc Mass Spectrom
 1997, 8, 275-282)
 
 But significant subroutine editing has been done regarding removal of interpolation parameterization since SciPy can handel a lot of this
-more simply than in Fortran.  I have not yet figured out why the buffer gas radius is off by a factor of 10.  So if buffr variable is set
-to 1.09, it is wrong, but 0.109 gives the correct predictions.
+more simply than in Fortran.
 
 This is a rewrite of "Sigma" in python.
 
